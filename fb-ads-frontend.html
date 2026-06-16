@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDMC Ads Instant Insights</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-12">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="border-b border-slate-800 pb-6 mb-8 text-center md:text-left">
+            <h1 class="text-3xl font-extrabold text-blue-500 tracking-tight">IDMC Ads Instant Insights</h1>
+            <p class="text-slate-400 mt-2">Campaign বা Ad ID দিয়ে লাইভ পারফরম্যান্স রেজাল্ট ট্র্যাক করুন</p>
+        </div>
+
+        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-2xl mb-8">
+            <form id="searchForm" class="flex flex-col md:flex-row gap-4">
+                <input 
+                    type="text" 
+                    id="campaignIdInput"
+                    placeholder="Enter Campaign ID or Ad ID (e.g. 238549...)" 
+                    class="flex-1 bg-slate-950 text-white placeholder-slate-500 px-4 py-3 rounded-lg border border-slate-800 focus:outline-none focus:border-blue-500 text-lg"
+                    required 
+                />
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-lg transition-all duration-200 text-lg shadow-md cursor-pointer disabled:bg-slate-800"
+                >
+                    Get Results
+                </button>
+            </form>
+            <p id="errorMessage" class="text-red-400 mt-3 text-sm font-medium hidden">⚠️ এরর মেসেজ</p>
+        </div>
+
+        <div id="loader" class="text-center py-8 hidden">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+            <p class="text-slate-400 mt-2">মেটা সার্ভার থেকে ডেটা লোড হচ্ছে...</p>
+        </div>
+
+        <div id="resultsView" class="space-y-6 hidden">
+            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
+                <span class="text-xs font-bold uppercase tracking-wider bg-blue-950 text-blue-400 px-3 py-1 rounded-full border border-blue-900">Campaign Active Report</span>
+                <h2 id="campaignName" class="text-2xl font-bold mt-3 text-white">📋 Campaign Name</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Amount Spent</p>
+                    <p id="spend" class="text-2xl font-black text-emerald-400 mt-1">$0.00</p>
+                </div>
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Impressions</p>
+                    <p id="impressions" class="text-2xl font-black text-white mt-1">0</p>
+                </div>
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Link Clicks</p>
+                    <p id="clicks" class="text-2xl font-black text-blue-400 mt-1">0</p>
+                </div>
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Reach</p>
+                    <p id="reach" class="text-2xl font-black text-purple-400 mt-1">0</p>
+                </div>
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Avg. CPC</p>
+                    <p id="cpc" class="text-2xl font-black text-amber-400 mt-1">$0.00</p>
+                </div>
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Avg. CPM</p>
+                    <p id="cpm" class="text-2xl font-black text-cyan-400 mt-1">$0.00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ আপনার রেন্ডার থেকে পাওয়া লাইভ ব্যাকএন্ড লিঙ্কটি নিচের ডাবল কোটেশনের ভেতর বসান
+        const BACKEND_URL = "https://your-app-name.onrender.com/api/insights"; 
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const campaignId = document.getElementById('campaignIdInput').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const resultsView = document.getElementById('resultsView');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Reset View
+            submitBtn.disabled = true;
+            loader.classList.remove('hidden');
+            resultsView.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ campaignId })
+                });
+                
+                const data = await response.json();
+
+                if (data.success && data.report) {
+                    const report = data.report;
+                    
+                    // UI-তে ডেটা পুশ করা
+                    document.getElementById('campaignName').innerText = "📋 " + (report.campaign_name || "N/A");
+                    document.getElementById('spend').innerText = "$" + parseFloat(report.spend || 0).toLocaleString();
+                    document.getElementById('impressions').innerText = parseInt(report.impressions || 0).toLocaleString();
+                    document.getElementById('clicks').innerText = parseInt(report.clicks || 0).toLocaleString();
+                    document.getElementById('reach').innerText = parseInt(report.reach || 0).toLocaleString();
+                    document.getElementById('cpc').innerText = "$" + parseFloat(report.cpc || 0).toFixed(2);
+                    document.getElementById('cpm').innerText = "$" + parseFloat(report.cpm || 0).toFixed(2);
+                    
+                    resultsView.classList.remove('hidden');
+                } else {
+                    errorMessage.innerText = "⚠️ এই আইডিতে কোনো ডেটা পাওয়া যায়নি বা আইডিটি ভুল।";
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorMessage.innerText = "⚠️ ব্যাকএন্ড সার্ভারের সাথে কানেক্ট করা যাচ্ছে না।";
+                errorMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                loader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -15,7 +15,7 @@
     <div class="max-w-4xl mx-auto">
         <div class="border-b border-slate-800 pb-6 mb-8 text-center md:text-left">
             <h1 class="text-3xl font-extrabold text-blue-500 tracking-tight">IDMC Ads Instant Insights</h1>
-            <p class="text-slate-400 mt-2">Campaign বা Ad ID দিয়ে লাইভ পারফরম্যান্স রেজাল্ট ট্র্যাক করুন</p>
+            <p class="text-slate-400 mt-2">Campaign বা Ad ID দিয়ে লাইভ পারফরম্যান্স রেজাল্ট ট্র্যাক করুন</p>
         </div>
 
         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-2xl mb-8">
@@ -79,8 +79,8 @@
     </div>
 
     <script>
-        // ⚠️ আপনার রেন্ডার থেকে পাওয়া লাইভ ব্যাকএন্ড লিঙ্কটি নিচের ডাবল কোটেশনের ভেতর বসান
-        const BACKEND_URL = "https://your-app-name.onrender.com/api/insights"; 
+        // ✅ আপনার রেন্ডার সার্ভারের লাইভ লিঙ্কটি এখানে আপডেট করে দেওয়া হলো
+        const BACKEND_URL = "https://dashboardbot.onrender.com/api/insights"; 
 
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -120,7 +120,7 @@
                     
                     resultsView.classList.remove('hidden');
                 } else {
-                    errorMessage.innerText = "⚠️ এই আইডিতে কোনো ডেটা পাওয়া যায়নি বা আইডিটি ভুল।";
+                    errorMessage.innerText = "⚠️ এই আইডিতে কোনো ডেটা পাওয়া যায়নি বা আইডিটি ভুল।";
                     errorMessage.classList.remove('hidden');
                 }
             } catch (err) {

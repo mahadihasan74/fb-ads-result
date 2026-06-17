@@ -1,85 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IDMC Ads Instant Insights</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
-        body { font-family: 'Hind Siliguri', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        body { 
+            font-family: 'Hind Siliguri', sans-serif; 
+            background: radial-gradient(circle at top center, #0f172a 0%, #020617 100%);
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-12">
+<body class="min-h-screen text-slate-100 p-4 md:p-12 antialiased">
 
-    <div class="max-w-4xl mx-auto">
-        <div class="border-b border-slate-800 pb-6 mb-8 text-center md:text-left">
-            <h1 class="text-3xl font-extrabold text-blue-500 tracking-tight">IDMC Ads Instant Insights</h1>
-            <p class="text-slate-400 mt-2">Campaign বা Ad ID দিয়ে লাইভ পারফরম্যান্স রেজাল্ট ট্র্যাক করুন</p>
+    <div class="max-w-5xl mx-auto">
+        
+        <div class="text-center md:text-left mb-10 border-b border-slate-800/60 pb-8 relative">
+            <div class="absolute top-0 left-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full"></div>
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                IDMC Ads Instant Insights
+            </h1>
+            <p class="text-slate-400 mt-2 font-medium text-base md:text-lg">
+                আপনার Campaign বা Ad ID দিয়ে মেটা সার্ভার থেকে লাইভ পারফরম্যান্স ট্র্যাক করুন
+            </p>
         </div>
 
-        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-2xl mb-8">
+        <div class="bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800/80 shadow-2xl mb-8 transition-all">
             <form id="searchForm" class="flex flex-col md:flex-row gap-4">
-                <input 
-                    type="text" 
-                    id="campaignIdInput"
-                    placeholder="Enter Campaign ID or Ad ID (e.g. 238549...)" 
-                    class="flex-1 bg-slate-950 text-white placeholder-slate-500 px-4 py-3 rounded-lg border border-slate-800 focus:outline-none focus:border-blue-500 text-lg"
-                    required 
-                />
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        id="campaignIdInput"
+                        placeholder="ক্যাম্পেইন আইডি বা অ্যাড আইডি দিন (যেমন: 120245...)" 
+                        class="w-full bg-slate-950/90 text-white placeholder-slate-500 px-5 py-4 rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-lg transition-all font-medium"
+                        required 
+                    />
+                </div>
                 <button 
                     type="submit" 
                     id="submitBtn"
-                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-lg transition-all duration-200 text-lg shadow-md cursor-pointer disabled:bg-slate-800"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 text-lg shadow-lg shadow-blue-500/20 active:scale-95 cursor-pointer disabled:opacity-50"
                 >
                     Get Results
                 </button>
             </form>
-            <p id="errorMessage" class="text-red-400 mt-3 text-sm font-medium hidden">⚠️ এরর মেসেজ</p>
+            <p id="errorMessage" class="text-red-400 mt-4 text-sm font-semibold hidden flex items-center gap-2">
+                <span>⚠️</span> <span id="errorText">এরর মেসেজ</span>
+            </p>
         </div>
 
-        <div id="loader" class="text-center py-8 hidden">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-            <p class="text-slate-400 mt-2">মেটা সার্ভার থেকে ডেটা লোড হচ্ছে...</p>
+        <div id="loader" class="text-center py-12 hidden">
+            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent shadow-md"></div>
+            <p class="text-slate-400 mt-3 font-medium text-lg animate-pulse">মেটা সার্ভার থেকে লাইভ ডেটা আনা হচ্ছে...</p>
         </div>
 
         <div id="resultsView" class="space-y-6 hidden">
-            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
-                <span class="text-xs font-bold uppercase tracking-wider bg-blue-950 text-blue-400 px-3 py-1 rounded-full border border-blue-900">Campaign Active Report</span>
-                <h2 id="campaignName" class="text-2xl font-bold mt-3 text-white">📋 Campaign Name</h2>
+            
+            <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 p-6 rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-48 h-48 bg-emerald-500/5 blur-3xl rounded-full"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20">
+                        Live Active Report
+                    </span>
+                </div>
+                <h2 id="campaignName" class="text-2xl font-bold mt-4 text-white tracking-wide">📋 Campaign Name</h2>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
+                
+                <div class="bg-slate-900/50 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-md transition-all duration-300 transform hover:-translate-y-1">
                     <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Amount Spent</p>
-                    <p id="spend" class="text-2xl font-black text-emerald-400 mt-1">$0.00</p>
+                    <p id="spend" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 mt-2">$0.00</p>
                 </div>
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                
+                <div class="bg-slate-900/50 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-md transition-all duration-300 transform hover:-translate-y-1">
                     <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Impressions</p>
-                    <p id="impressions" class="text-2xl font-black text-white mt-1">0</p>
+                    <p id="impressions" class="text-3xl font-extrabold text-white mt-2">0</p>
                 </div>
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                
+                <div class="bg-slate-900/50 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-md transition-all duration-300 transform hover:-translate-y-1">
                     <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Link Clicks</p>
-                    <p id="clicks" class="text-2xl font-black text-blue-400 mt-1">0</p>
+                    <p id="clicks" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mt-2">0</p>
                 </div>
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                
+                <div class="bg-slate-900/50 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-md transition-all duration-300 transform hover:-translate-y-1">
                     <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Reach</p>
-                    <p id="reach" class="text-2xl font-black text-purple-400 mt-1">0</p>
+                    <p id="reach" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400 mt-2">0</p>
                 </div>
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                
+                <div class="bg-slate-900/50 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-md transition-all duration-300 transform hover:-translate-y-1">
                     <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Avg. CPC</p>
-                    <p id="cpc" class="text-2xl font-black text-amber-400 mt-1">$0.00</p>
+                    <p id="cpc" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 mt-2">$0.00</p>
                 </div>
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md">
+                
+                <div class="bg-slate-900/50 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-2xl border border-slate-800/80 shadow-md transition-all duration-300 transform hover:-translate-y-1">
                     <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Avg. CPM</p>
-                    <p id="cpm" class="text-2xl font-black text-cyan-400 mt-1">$0.00</p>
+                    <p id="cpm" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-400 mt-2">$0.00</p>
                 </div>
+
             </div>
         </div>
     </div>
 
     <script>
-        // ✅ আপনার রেন্ডারের পারফেক্ট লিঙ্কটি এখানে বসিয়ে দেওয়া হয়েছে
         const BACKEND_URL = "https://fb-ads-backend-xlen.onrender.com/api/insights"; 
 
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
@@ -90,6 +115,7 @@
             const loader = document.getElementById('loader');
             const resultsView = document.getElementById('resultsView');
             const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
 
             // Reset View
             submitBtn.disabled = true;
@@ -106,25 +132,34 @@
                 
                 const data = await response.json();
 
-                if (data.success && data.report) {
-                    const report = data.report;
+                if (data.success) {
+                    // যদি মেটা একদম ফাঁকা ডেটা দেয় ($0.00 স্পেন্ডের কারণে), তবে আমরা ম্যানুয়ালি ০ সেট করব
+                    const report = data.report || {
+                        campaign_name: "New / Inactive Campaign",
+                        spend: 0,
+                        impressions: 0,
+                        clicks: 0,
+                        reach: 0,
+                        cpc: 0,
+                        cpm: 0
+                    };
                     
                     // UI-তে ডেটা পুশ করা
-                    document.getElementById('campaignName').innerText = "📋 " + (report.campaign_name || "N/A");
-                    document.getElementById('spend').innerText = "$" + parseFloat(report.spend || 0).toLocaleString();
-                    document.getElementById('impressions').innerText = parseInt(report.impressions || 0).toLocaleString();
-                    document.getElementById('clicks').innerText = parseInt(report.clicks || 0).toLocaleString();
-                    document.getElementById('reach').innerText = parseInt(report.reach || 0).toLocaleString();
-                    document.getElementById('cpc').innerText = "$" + parseFloat(report.cpc || 0).toFixed(2);
-                    document.getElementById('cpm').innerText = "$" + parseFloat(report.cpm || 0).toFixed(2);
+                    document.getElementById('campaignName').innerText = "📋 " + report.campaign_name;
+                    document.getElementById('spend').innerText = "$" + parseFloat(report.spend).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    document.getElementById('impressions').innerText = parseInt(report.impressions).toLocaleString();
+                    document.getElementById('clicks').innerText = parseInt(report.clicks).toLocaleString();
+                    document.getElementById('reach').innerText = parseInt(report.reach).toLocaleString();
+                    document.getElementById('cpc').innerText = "$" + parseFloat(report.cpc).toFixed(2);
+                    document.getElementById('cpm').innerText = "$" + parseFloat(report.cpm).toFixed(2);
                     
                     resultsView.classList.remove('hidden');
                 } else {
-                    errorMessage.innerText = "⚠️ এই আইডিতে কোনো ডেটা পাওয়া যায়নি বা আইডিটি ভুল।";
+                    errorText.innerText = "এই আইডিতে কোনো ডেটা পাওয়া যায়নি বা আইডিটি ভুল।";
                     errorMessage.classList.remove('hidden');
                 }
             } catch (err) {
-                errorMessage.innerText = "⚠️ ব্যাকএন্ড সার্ভারের সাথে কানেক্ট করা যাচ্ছে না।";
+                errorText.innerText = "ব্যাকএন্ড সার্ভারের সাথে কানেক্ট করা যাচ্ছে না।";
                 errorMessage.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
